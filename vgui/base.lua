@@ -63,7 +63,7 @@ end
 
 function PANEL:AddMessage(content)
   local message = vgui.Create('chatMessage', self.Content)
-  message:SetMessage(content)
+  message:AddContent(content)
   
   local y = self.Content.pnlCanvas:GetTall()
   local w, h = message:GetSize()
@@ -77,7 +77,7 @@ end
 function PANEL:Paint(width, height)
   draw.RoundedBoxEx(4, 0, 0, width, self:GetHeaderSize() + 4, Color(35, 130, 186), true, true)
   draw.RoundedBoxEx(4, 0, self:GetHeaderSize() + 4, width, height - self:GetHeaderSize(), Color(33, 33, 33), false, false, true, true)
-  draw.SimpleText(GetHostName(), 'chatbox24', 4, 2, Color(240, 240, 240), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP) 
+  draw.SimpleText(GetHostName(), 'chatbox24', 8, 2, Color(240, 240, 240), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP) 
 end
 
 vgui.Register('chatBase', PANEL, 'DFrame')
