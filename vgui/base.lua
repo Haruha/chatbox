@@ -6,34 +6,35 @@ function PANEL:Init()
   self:SetTitle('')
   self:ShowCloseButton(false)
   self:SetHeaderSize(24)
+  self.BlurMat = Material("pp/blurscreen")
 
   self.Content = vgui.Create('DScrollPanel', self)
   self.Content.Paint = function(this, w, h) 
-    draw.RoundedBox(4, 0, 0, w, h, Color(46, 46, 46))
+    -- draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 100))
   end
+
   local scr = self.Content:GetVBar()
   scr.PerformLayout = function()
-    local wide = scr:GetWide()
+    local scrollWidth = scr:GetWide()
     local scroll = scr:GetScroll() / scr.CanvasSize
     local barSize = math.max(scr:BarScale() * scr:GetTall(), 10)
     local track = scr:GetTall() - barSize
-    track = track + 1
 
     scroll = scroll * track
 
     scr.btnGrip:SetPos(0, scroll)
-    scr.btnGrip:SetSize(wide, barSize)
+    scr.btnGrip:SetSize(scrollWidth, barSize)
 
-    scr.btnUp:SetPos(0, 0, wide, wide)
-    scr.btnUp:SetSize(wide, 0)
+    scr.btnUp:SetPos(0, 0, scrollWidth, scrollWidth)
+    scr.btnUp:SetSize(scrollWidth, 0)
 
-    scr.btnDown:SetPos(0, scr:GetTall(), wide, wide)
-    scr.btnDown:SetSize(wide, 0)
+    scr.btnDown:SetPos(0, scr:GetTall(), scrollWidth, scrollWidth)
+    scr.btnDown:SetSize(scrollWidth, 0)
   end
-  scr.Paint = function() draw.RoundedBox(2, 0, 0, scr:GetWide(), scr:GetTall(), Color(46, 46, 46, 255)) end
+  scr.Paint = function() end
   scr.btnUp.Paint = function() end
   scr.btnDown.Paint = function() end
-  scr.btnGrip.Paint = function() draw.RoundedBox(2, 2, 0, scr.btnGrip:GetWide() - 4, scr.btnGrip:GetTall() - 2, Color(33, 33, 33, 255)) end
+  scr.btnGrip.Paint = function() draw.RoundedBox(4, 2, 0, scr.btnGrip:GetWide() - 4, scr.btnGrip:GetTall() - 2, Color(0, 0, 0, 100)) end
 
   self.CloseButton = vgui.Create('DButton', self)
   self.CloseButton:SetSize(32, 20)
@@ -75,8 +76,23 @@ function PANEL:AddMessage(content)
 end
 
 function PANEL:Paint(width, height)
+  local x, y = self:LocalToScreen(0, 0);
+
+  surface.SetDrawColor(255, 255, 255, 100);
+  surface.SetMaterial(self.BlurMat);
+
+  for i = 1, 3 do
+    self.BlurMat:SetFloat("$blur", i * 2);
+    self.BlurMat:Recompute();
+    render.UpdateScreenEffectTexture();
+    surface.DrawTexturedRect(-x, -y, ScrW(), ScrH());
+  end
+
+  draw.RoundedBox(4, 0, 0, width, height, Color(0, 0, 0, 230))
+
+
   draw.RoundedBoxEx(4, 0, 0, width, self:GetHeaderSize() + 4, Color(35, 130, 186), true, true)
-  draw.RoundedBoxEx(4, 0, self:GetHeaderSize() + 4, width, height - self:GetHeaderSize(), Color(33, 33, 33), false, false, true, true)
+  -- draw.RoundedBoxEx(4, 0, self:GetHeaderSize() + 4, width, height - self:GetHeaderSize(), Color(33, 33, 33), false, false, true, true)
   draw.SimpleText(GetHostName(), 'chatbox24', 8, 2, Color(240, 240, 240), TEXT_ALIGN_LEFT, TEXT_ALIGN_TOP) 
 end
 
