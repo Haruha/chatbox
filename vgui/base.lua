@@ -7,11 +7,42 @@ function PANEL:Init()
   self:ShowCloseButton(false)
   self:SetHeaderSize(24)
   self.BlurMat = Material("pp/blurscreen")
+  self.HasScrolledToFirstMessage = false
+  self.Messages = {}
 
   self.Content = vgui.Create('DScrollPanel', self)
   self.Content.Paint = function(this, w, h) 
     -- draw.RoundedBox(4, 0, 0, w, h, Color(0, 0, 0, 100))
   end
+
+  local canvasInternalLayout = self.Content.PerformLayout
+	self.Content.PerformLayout = function(this)
+		canvasInternalLayout(this)
+
+    local scrollCanvasPositionYStart = self.Content.VBar:GetOffset() * -1
+    local scrollCanvasPositionYEnd = scrollCanvasPositionYStart + self.Content:GetTall()
+
+    for k, v in pairs(self.Messages) do
+      local vX, vY = v:GetPos()
+      local vW, vH = v:GetSize()
+      local extraRenderHeight = 200
+
+      if ((vY + vH >= scrollCanvasPositionYStart - extraRenderHeight) && (vY <= scrollCanvasPositionYEnd + extraRenderHeight)) then
+        if (v.ShouldRender == false) then
+          v.ShouldRender = true
+          v:GenerateSegmentVguiElements()
+          v:PerformLayout()
+        end
+      else
+        if (v.ShouldRender == true) then
+          v.ShouldRender = false
+          v:RemoveSegmentVguiElements()
+          v:PerformLayout()
+        end
+      end
+    end
+
+	end
 
   local scr = self.Content:GetVBar()
   scr.PerformLayout = function()
@@ -34,7 +65,7 @@ function PANEL:Init()
   scr.Paint = function() end
   scr.btnUp.Paint = function() end
   scr.btnDown.Paint = function() end
-  scr.btnGrip.Paint = function() draw.RoundedBox(4, 2, 0, scr.btnGrip:GetWide() - 4, scr.btnGrip:GetTall() - 2, Color(0, 0, 0, 100)) end
+  scr.btnGrip.Paint = function(_, w, h) draw.RoundedBox(4, 2, 0, w - 4, h, Color(0, 0, 0, 100)) end
 
   self.CloseButton = vgui.Create('DButton', self)
   self.CloseButton:SetSize(32, 20)
@@ -65,14 +96,28 @@ end
 function PANEL:AddMessage(content)
   local message = vgui.Create('chatMessage', self.Content)
   message:AddContent(content)
-  
-  local y = self.Content.pnlCanvas:GetTall()
-  local w, h = message:GetSize()
-    
-  y = y + h * 0.5;
-  y = y - self.Content:GetTall() * 0.5;
+  message:InvalidateLayout(true)
 
-  self.Content.VBar:AnimateTo(y, 0.5, 0, 0.5);
+  table.insert(self.Messages, message)
+  
+  -- Only scroll to the new message if the scrollbar is enabled and we're not viewing the most recent message
+  if (self.Content:GetCanvas():GetTall() >= self.Content:GetTall()) then
+    local bar = self.Content:GetVBar()
+    local barPosX, barPosY = bar.btnGrip:GetPos()
+    local y = self.Content.pnlCanvas:GetTall()
+    local w, h = message:GetSize()
+      
+    y = y + h * 0.5
+    y = y - self.Content:GetTall() * 0.5
+
+
+    -- if (!self.HasScrolledToFirstMessage || (bar.btnGrip:GetTall() + barPosY == self.Content:GetTall() - 1)) then
+    if (!self.HasScrolledToFirstMessage || (self.Content.VBar:GetScroll() / self.Content.VBar.CanvasSize) != 1) then
+      timer.Simple(0.1, function() self.Content.VBar:AnimateTo(y, 1, 0, -1) end)
+
+      self.HasScrolledToFirstMessage = true -- Account for scrolling to the message when the scrollbar is first enabled
+    end
+  end
 end
 
 function PANEL:Paint(width, height)
@@ -89,7 +134,6 @@ function PANEL:Paint(width, height)
   end
 
   draw.RoundedBox(4, 0, 0, width, height, Color(0, 0, 0, 230))
-
 
   draw.RoundedBoxEx(4, 0, 0, width, self:GetHeaderSize() + 4, Color(35, 130, 186), true, true)
   -- draw.RoundedBoxEx(4, 0, self:GetHeaderSize() + 4, width, height - self:GetHeaderSize(), Color(33, 33, 33), false, false, true, true)

@@ -43,43 +43,91 @@ local messages = {
   {
     'A long string of sample text. 冰淇淋 Maybe this will be a message in game! ',
     Color(240, 124, 60),
-    'In quis suscipit augue. http://google.com - Cras tristique : nisl :smile: libero, жзклмнпрстф luctus magna tincidunt sed. ',
+    'In quis suscipit augue. http://google.com - Cras tristique : nisl :smile: :stonks: :stonks: :stonks: :stonks: :stonks: :stonks: libero, жзклмнпрстф luctus magna tincidunt sed. ',
     Color(156, 125, 232),
-    'Maecenas ut mollis justo, :cute: vitae consequat elit. :b1: Etiam อักษรจีน :stonks: tincidunt http://google.com id nunc at ultrices. '
+    'Maecenas ut mollis justo, vitae consequat elit. Etiam อักษรจีน http://google.com tincidunt id :stonks: nunc at ultrices. '
+  },
+  {
+    'A long string of sample text. 冰淇淋 Maybe this will be a message in game! ',
+    Color(240, 124, 60),
+    'In quis suscipit augue. http://google.com - Cras tristique : nisl :smile: :stonks: :stonks: :stonks: :stonks: :stonks: :stonks: libero, жзклмнпрстф luctus magna tincidunt sed. ',
+    Color(156, 125, 232),
+    'Maecenas ut mollis justo, vitae consequat elit. Etiam อักษรจีน http://google.com tincidunt id :stonks: nunc at ultrices. '
+  },
+  {
+    'A long string of sample text. 冰淇淋 Maybe this will be a message in game! ',
+    Color(240, 124, 60),
+    'In quis suscipit augue. http://google.com - Cras tristique : nisl :smile: :stonks: :stonks: :stonks: :stonks: :stonks: :stonks: libero, жзклмнпрстф luctus magna tincidunt sed. ',
+    Color(156, 125, 232),
+    'Maecenas ut mollis justo, vitae consequat elit. Etiam อักษรจีน http://google.com tincidunt id :stonks: nunc at ultrices. '
+  },
+  {
+    'A long string of sample text. 冰淇淋 Maybe this will be a message in game! ',
+    Color(240, 124, 60),
+    'In quis suscipit augue. http://google.com - Cras tristique : nisl :smile: :stonks: :stonks: :stonks: :stonks: :stonks: :stonks: libero, жзклмнпрстф luctus magna tincidunt sed. ',
+    Color(156, 125, 232),
+    'Maecenas ut mollis justo, vitae consequat elit. Etiam อักษรจีน http://google.com tincidunt id :stonks: nunc at ultrices. '
+  },
+  {
+    'A long string of sample text. 冰淇淋 Maybe this will be a message in game! ',
+    Color(240, 124, 60),
+    'In quis suscipit augue. http://google.com - Cras tristique : nisl :smile: :stonks: :stonks: :stonks: :stonks: :stonks: :stonks: libero, жзклмнпрстф luctus magna tincidunt sed. ',
+    Color(156, 125, 232),
+    'Maecenas ut mollis justo, vitae consequat elit. Etiam อักษรจีน http://google.com tincidunt id :stonks: nunc at ultrices. '
+  },
+  {
+    'A long string of sample text. 冰淇淋 Maybe this will be a message in game! ',
+    Color(240, 124, 60),
+    'In quis suscipit augue. http://google.com - Cras tristique : nisl :smile: :stonks: :stonks: :stonks: :stonks: :stonks: :stonks: libero, жзклмнпрстф luctus magna tincidunt sed. ',
+    Color(156, 125, 232),
+    'Maecenas ut mollis justo, vitae consequat elit. Etiam อักษรจีน http://google.com tincidunt id :stonks: nunc at ultrices. '
+  },
+  {
+    'A long string of sample text. 冰淇淋 Maybe this will be a message in game! ',
+    Color(240, 124, 60),
+    'In quis suscipit augue. http://google.com - Cras tristique : nisl :smile: :stonks: :stonks: :stonks: :stonks: :stonks: :stonks: libero, жзклмнпрстф luctus magna tincidunt sed. ',
+    Color(156, 125, 232),
+    'Maecenas ut mollis justo, vitae consequat elit. Etiam อักษรจีน http://google.com tincidunt id :stonks: nunc at ultrices. '
+  },
+  {
+    'A long string of sample text. 冰淇淋 Maybe this will be a message in game! ',
+    Color(240, 124, 60),
+    'In quis suscipit augue. http://google.com - Cras tristique : nisl :smile: :stonks: :stonks: :stonks: :stonks: :stonks: :stonks: libero, жзклмнпрстф luctus magna tincidunt sed. ',
+    Color(156, 125, 232),
+    'Maecenas ut mollis justo, vitae consequat elit. Etiam อักษรจีน http://google.com tincidunt id :stonks: nunc at ultrices. '
   },
   { 
     Color(122, 160, 240),
     'Et odio pellentesque diam volutpat commodo sed egestas. Orci eu lobortis elementum nibh',
   },
-  { 
-    'A text message!',
-  },  
-  { 
-    'A text message!',
-  },  
-  { 
-    'A text message!',
-  },  
-  { 
-    'A text message!',
-  },  
-  { 
-    'A text message!',
-  },  
-  { 
-    'A text message!',
-  },  
-  { 
-    'A text message!',
-  },  
-  { 
-    'A text message!',
-  },
 }
 
+
+
 local count = 1
-for k, v in pairs(messages) do
-  if (IsValid(base)) then
-    base:AddMessage(v)
+for i=1, 10 do
+  for k, v in pairs(messages) do
+    if (IsValid(base)) then
+      base:AddMessage(v)
+    end
   end
 end
+
+/*
+  for k, v in pairs(messages) do
+    if (IsValid(base)) then
+      base:AddMessage(v)
+    end
+  end
+*/
+/*
+for i=1, 5 do
+  local count = 1
+  
+    timer.Create('chatTimer' .. i, 0.2, #messages, function()
+      if (IsValid(base)) then
+        base:AddMessage(messages[count])
+        count = count + 1
+      end
+    end) 
+end*/

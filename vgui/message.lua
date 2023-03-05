@@ -37,6 +37,7 @@ function PANEL:Init()
   self:SetFont('chatbox20')
   self:SetFontSize(draw.GetFontHeight(self:GetFont()))
   self:SetMessagePadding(2)
+  self.ShouldRender = true
 
   self.Avatar = vgui.Create('DPanel', self)
   self.Avatar:SetTall(30)
@@ -55,9 +56,6 @@ function PANEL:Init()
 	self.Avatar.Image:SetSize(24, 24)
 	self.Avatar.Image:SetPlayer(LocalPlayer(), 24)
 
-  self.TextStart = vgui.Create('DPanel', self)
-  self.TextStart.Paint = function() end
-
   self.Links = {}
   self.WebImages = {}
   self.iMaterials = {}
@@ -75,7 +73,9 @@ function PANEL:GenerateSegmentVguiElements()
   for k, messagePart in pairs(self:GetMessage()) do
     if (type(messagePart) == 'string') then
       for i, word in pairs(string.Split(messagePart, ' ')) do
-        if (string.StartWith(word, 'http://') || string.StartWith(word, 'https://')) then
+
+        -- Attempt to find a match with a link
+        if (self:IsValidURL(word)) then
           local label = vgui.Create('DLabel', self)
           label:SetFont(self:GetFont())
           label:SetColor(Color(48, 167, 250))
@@ -93,7 +93,7 @@ function PANEL:GenerateSegmentVguiElements()
         -- Loop through emojis and try to find a match
         for _, emoji in pairs(emojis) do
           if (word == emoji.name) then
-            if self:IsValidURL(emoji.source) then
+            if (self:IsValidURL(emoji.source)) then
               local html = vgui.Create('DHTML', self)
               html.OnDocumentReady = function(self, page)
                 self:RunJavascript([[
@@ -114,6 +114,21 @@ function PANEL:GenerateSegmentVguiElements()
       end
     end
   end
+end
+
+function PANEL:RemoveSegmentVguiElements()
+  for k,v in pairs(self.Links) do
+    v:Remove()
+  end
+  
+  self.Links = {}
+
+
+  for k, v in pairs(self.WebImages) do
+    v:Remove()
+  end
+
+  self.WebImages = {}
 end
 
 function PANEL:IsValidURL(url)
@@ -290,30 +305,38 @@ function PANEL:PerformLayout(width, height)
   self.Avatar:SetPos(0, self:GetMessagePadding())
   self.Avatar.Image:SetPos(self:GetMessagePadding(), (self.Avatar:GetTall() - self.Avatar.Image:GetTall()) / 2)
 
-  self.TextStart:SetHeight(self:GetFontSize())
-  self.TextStart:SetWide(self:GetWide() - self.Avatar:GetWide() - 4)
-  self.TextStart:SetPos(self.Avatar:GetWide() + self:GetMessagePadding(), self:GetMessagePadding())
-
   self:GenerateSegments()
   self:PerformSegmentLayout()
 
   local lastSegment = self:GetSegments()[#self:GetSegments()]
-  local height = math.max(lastSegment.y + self:GetFontSize() - (self:GetMessagePadding() * 2) - 6, (self.Avatar:GetTall() + self:GetMessagePadding()))
+  local height = math.max(
+    lastSegment.y + self:GetFontSize() - (self:GetMessagePadding() * 2) - 6, 
+    (self.Avatar:GetTall() + self:GetMessagePadding())
+  )
 
   self:SetHeight(height)
+
+  for k, v in pairs(self.WebImages) do
+    v:SetVisible(self.ShouldRender)
+    print(v:IsVisible())
+  end
+
+  self.Avatar:SetVisible(self.ShouldRender)
+
+  -- self:SetVisible(self.ShouldRender)
 end
 
 function PANEL:Paint(width, height)
-  if (self:GetMessage() != nil) then
+  if (self:GetMessage() != nil && self.ShouldRender) then
     -- Background
     -- draw.RoundedBox(4, 0, 0, width, height, Color(31, 31, 31))
 
     -- Individual segments
     for k, v in pairs(self:GetSegments()) do
       if (v.isLocalEmoji) then
-        surface.SetMaterial(self.iMaterials[v.material])
-        surface.SetDrawColor(255, 255, 255, 255)
-        surface.DrawTexturedRect(v.x, v.y - (v.h / 2), 16, 16)
+        -- surface.SetMaterial(self.iMaterials[v.material])
+        -- surface.SetDrawColor(255, 255, 255, 255)
+        -- surface.DrawTexturedRect(v.x, v.y - (v.h / 2), 16, 16)
       elseif (v.url) then
 
       else
@@ -323,21 +346,26 @@ function PANEL:Paint(width, height)
   end
 end
 
-function PANEL:OnMouseReleased(control)
-	if (control == MOUSE_RIGHT) then
+function PANEL:GetMessageText()
+  local message = ''
+
+  for k, v in pairs(self:GetMessage()) do
+    if (type(v) == 'string') then
+      message = message .. v
+    end
+  end
+
+  return message
+end
+
+function PANEL:OnMouseReleased(input)
+	if (input == MOUSE_RIGHT) then
 
 		local menu = DermaMenu()
 
 		menu:AddOption('Copy', function() 
       if (ValidPanel(self)) then
-        local message = ''
-        for k, v in pairs(self:GetMessage()) do
-          if (type(v) == 'string') then
-            message = message .. v
-          end
-        end
-        
-        SetClipboardText(message)
+        SetClipboardText(self:GetMessageText())
       end
     end)
 
